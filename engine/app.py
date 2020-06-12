@@ -81,6 +81,7 @@ class Application(object):
             if not self.loop(self.calc_dt()):
                 break
             self.flip()
+        get_screen().stop()
 
 # EXPORT
 # def key_down(key_name):

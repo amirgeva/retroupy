@@ -3,6 +3,11 @@ import math
 
 
 # EXPORT
+def rgb(r, g, b):
+    return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | ((b >> 3) & 0x1F)
+
+
+# EXPORT
 class Point(object):
     def __init__(self, *args):
         if len(args) == 2:
