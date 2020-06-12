@@ -277,6 +277,12 @@ class Font:
             index = 0
         return self.data[index]
 
+    def write(self, target, x, y, s):
+        for c in s:
+            src = self.get(ord(c))
+            target[y:(y + 16), x:(x + 8), :] = src
+            x = x +8
+
     def width(self):
         return 8
 

@@ -1,23 +1,29 @@
 #!/usr/bin/env python3
+from typing import Tuple
+
 import cv2
 import numpy as np
 import threading
 import time
-import uoscore
-from font import Font
+from app import app
+# import sim_uoscore
+from sim_font import Font
+from utils import Rect, Point
 
 N_SPRITES = 160
 
 
 def cvt16to32(c):
-    return (c >> 8) & 0xF8, (c >> 3) & 0xFC, (c & 0x1F) << 3, 255
+    return (c & 0x1F) << 3, (c >> 3) & 0xFC, (c >> 8) & 0xF8, 255
 
 
 class Screen:
-    def __init__(self, parent=None):
+    Cursor: Tuple[int, int]
+
+    def __init__(self):
         self.Image = np.ndarray((480, 640, 4), dtype=np.uint8)
-        self.Sprites = [np.ndarray((32, 32, 4), dtype=np.uint8) for i in range(N_SPRITES)]
-        self.Sprites16 = [np.ndarray((32, 32), dtype=np.uint16) for i in range(N_SPRITES)]
+        self.Sprites = [np.ndarray((32, 32, 4), dtype=np.uint8) for _ in range(N_SPRITES)]
+        self.Sprites16 = [np.ndarray((32, 32), dtype=np.uint16) for _ in range(N_SPRITES)]
         for i in range(N_SPRITES):
             sprite = self.Sprites[i]
             sprite[:] = (0, 0, 0, 255)
@@ -63,6 +69,9 @@ class Screen:
         self.bg = 0, 0, 0, 255
         self.Cursor = 0, 0
         self.updated = True
+
+    def flip(self):
+        self.show()
 
     def height(self):
         return self.Image.shape[0]
@@ -132,12 +141,6 @@ class Screen:
         self.Image[y:(y + h), x:(x + w)] = self.bg
         self.updated = True
 
-    # def draw_rect(self, w, h):
-    #    self.horz_line(self.Cursor[0], self.Cursor[0] + w - 1, self.Cursor[1])
-    #    self.horz_line(self.Cursor[0], self.Cursor[0] + w - 1, self.Cursor[1] + h - 1)
-    #    self.vert_line(self.Cursor[0], self.Cursor[1], self.Cursor[1] + h - 1)
-    #    self.vert_line(self.Cursor[0] + w - 1, self.Cursor[1], self.Cursor[1] + h - 1)
-
     def horz_line(self, x0, x1, y):
         cv2.line(self.Image, (x0, y), (x1, y), self.fg)
         self.updated = True
@@ -162,20 +165,40 @@ class Screen:
             spr16 = self.Sprites16[index]
             for y in range(spr.shape[0]):
                 for x in range(spr.shape[1]):
-                    c = cvt16to32(pixels[i])
+                    pixel = (int(pixels[i * 2 + 1]) << 8) | int(pixels[i * 2])
+                    c = cvt16to32(pixel)
                     alpha = 255
                     if self.transparency:
-                        alpha = 0 if pixels[i] == self.transparent else 255
+                        alpha = 0 if pixel == self.transparent else 255
                     spr[y, x, :] = c[0], c[1], c[2], alpha
-                    spr16[y, x] = pixels[i]
+                    spr16[y, x] = pixel
                     i = i + 1
+
+    def draw_partial(self, x, y, index):
+        s = self.Sprites[index]
+        rdst = Rect(x, y, x + 32, y + 32).intersection(Rect(0, 0, self.width(), self.height()))
+        rsrc = Rect(rdst)
+        rsrc.move(Point(-x, -y))
+        dst = self.Image[rdst.tl.y:rdst.br.y, rdst.tl.x:rdst.br.x, :]
+        src = s[rsrc.tl.y:rsrc.br.y, rsrc.tl.x:rsrc.br.x, :]
+        alpha = (src[:, :, 3] == 255)
+        for c in range(3):
+            np.copyto(dst[:, :, c], src[:, :, c], where=alpha)
 
     def draw_sprite(self, x, y, index):
         if 0 <= index < N_SPRITES:
-            self.pixel_cursor(x, y)
-            s = self.Sprites[index]
-            for c in range(3):
-                np.copyto(self.Image[y:(y + s.shape[0]), x:(x + s.shape[1]), c], s[:, :, c], where=(s[:, :, 3] == 255))
+            x = int(x)
+            y = int(y)
+            if x >= self.width() or (x + 32) <= 0 or y >= self.height() or (y + 32) <= 0:
+                return
+            if x < 0 or y < 0 or (x + 32) > self.width() or (y + 32) > self.height():
+                self.draw_partial(x, y, index)
+            else:
+                self.pixel_cursor(x, y)
+                s = self.Sprites[index]
+                alpha = (s[:, :, 3] == 255)
+                for c in range(3):
+                    np.copyto(self.Image[y:(y + s.shape[0]), x:(x + s.shape[1]), c], s[:, :, c], where=alpha)
             self.updated = True
 
     def set_transparent_color(self, enabled, color):
@@ -189,6 +212,7 @@ class Screen:
                     spr[y, x, 3] = 0 if (enabled and spr16[y, x] == color) else 255
 
     def show(self):
+        self.font.write(self.Image, 0, 0, f'FPS: {int(app.fps)}')
         w = int(self.Scaling * self.Image.shape[1])
         h = int(self.Scaling * self.Image.shape[0])
         img = cv2.resize(self.Image, (w, h), interpolation=cv2.INTER_NEAREST)
@@ -208,9 +232,12 @@ class Screen:
     @staticmethod
     def stop():
         global terminate
+        global show_thread
         if not terminate:
             terminate = True
-            show_thread.join()
+            if show_thread:
+                # noinspection PyUnresolvedReferences
+                show_thread.join()
 
 
 screen = Screen()
@@ -226,7 +253,7 @@ def show_loop():
             screen.show()
         time.sleep(0.05)
         count = count + 1
-        uoscore.timer()
+        # uoscore.timer()
         if count >= 10:
             count = 0
             screen.toggle_blink()
