@@ -1,5 +1,5 @@
-from rtree import RTree
-from utils import Point
+from .rtree import RTree
+from .utils import Point
 
 
 # EXPORT

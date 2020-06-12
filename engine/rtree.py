@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import sys
-from utils import Rect
 from random import randint, seed
+
+from .utils import Rect
 
 
 class RTreeNode(object):

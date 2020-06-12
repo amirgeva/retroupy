@@ -1,9 +1,12 @@
-from app import get_screen, Application
-from sprite import AnimatedSprite, StaticSprite
-from entity import Entity
-from utils import Point
-from sim_keyboard import is_pressed
 import random
+import os
+import sys
+
+cwd = os.getcwd()
+sys.path.append(cwd[0:max(cwd.rfind('/'), cwd.rfind('\\'))])
+
+from engine import *
+from sim.kbd import is_pressed
 
 
 class Player(Entity):
@@ -66,5 +69,10 @@ class GameApplication(Application):
         super().draw(view)
 
 
-app = GameApplication()
-app.run()
+def main():
+    app = GameApplication()
+    app.run()
+
+
+if __name__ == '__main__':
+    main()

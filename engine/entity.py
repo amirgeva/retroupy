@@ -1,5 +1,5 @@
-from physics import RigidBody
-from utils import Rect
+from .physics import RigidBody
+from .utils import Rect
 
 ids = 0
 

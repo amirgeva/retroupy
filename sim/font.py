@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 
 
+# EXPORT
 class Font:
     def __init__(self):
         self.data = [None] * 256

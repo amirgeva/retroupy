@@ -2,6 +2,7 @@ import itertools
 import math
 
 
+# EXPORT
 class Point(object):
     def __init__(self, *args):
         if len(args) == 2:
@@ -102,6 +103,7 @@ def vector2(*args):
             raise TypeError()
 
 
+# EXPORT
 class Rect(object):
     def __init__(self, *args):
         if len(args) == 2 and isinstance(args[0], Point) and isinstance(args[1], Point):

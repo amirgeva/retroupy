@@ -1,10 +1,9 @@
-from app import get_screen
-from utils import Rect
-from bitmatrix import BitMatrix
 import json
 import os
 
-rect32 = Rect(0, 0, 32, 32)
+from .app import get_screen
+from .utils import Rect
+from .bitmatrix import BitMatrix
 
 
 class SpritesManager:
@@ -98,8 +97,9 @@ class Sprite(object):
     def draw(self, position):
         get_screen().draw_sprite(position.x, position.y, self.sprite_id)
 
-    def get_rect(self):
-        return rect32
+    @staticmethod
+    def get_rect():
+        return Rect(0, 0, 32, 32)
 
     @staticmethod
     def deserialize(filename, obj):
@@ -133,6 +133,7 @@ class AnimationSequence(object):
         return len(self.sprites)
 
 
+# EXPORT
 class StaticSprite:
     def __init__(self, sprite=None):
         self.sprite = sprite
@@ -276,7 +277,9 @@ def load_json_file(filename):
 # EXPORT
 def load_json_str(s):
     obj = json.loads(s)
-    return AnimatedSprite.deserialize(obj)
+    a = AnimatedSprite()
+    a.deserialize(obj)
+    return a
 
 
 # EXPORT

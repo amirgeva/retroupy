@@ -1,4 +1,4 @@
-from utils import Rect
+from .utils import Rect
 
 
 # EXPORT
@@ -7,7 +7,7 @@ class View(object):
         if rect:
             self.rect = rect
         else:
-            from app import get_screen_size
+            from .app import get_screen_size
             res = get_screen_size()
             self.rect = Rect(0, 0, res[0], res[1])
 

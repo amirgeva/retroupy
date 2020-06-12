@@ -1,4 +1,4 @@
-from utils import vector2
+from .utils import vector2
 
 
 # EXPORT

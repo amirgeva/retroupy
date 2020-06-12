@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from utils import Point, Rect
+from .utils import Point, Rect
 
 
 class BitArray:

@@ -5,10 +5,10 @@ import cv2
 import numpy as np
 import threading
 import time
-from app import app
+# from app import app
 # import sim_uoscore
-from sim_font import Font
-from utils import Rect, Point
+from .font import Font
+from engine.utils import Rect, Point
 
 N_SPRITES = 160
 
@@ -17,6 +17,7 @@ def cvt16to32(c):
     return (c & 0x1F) << 3, (c >> 3) & 0xFC, (c >> 8) & 0xF8, 255
 
 
+# EXPORT
 class Screen:
     Cursor: Tuple[int, int]
 
@@ -212,7 +213,7 @@ class Screen:
                     spr[y, x, 3] = 0 if (enabled and spr16[y, x] == color) else 255
 
     def show(self):
-        self.font.write(self.Image, 0, 0, f'FPS: {int(app.fps)}')
+        # self.font.write(self.Image, 0, 0, f'FPS: {int(app.fps)}')
         w = int(self.Scaling * self.Image.shape[1])
         h = int(self.Scaling * self.Image.shape[0])
         img = cv2.resize(self.Image, (w, h), interpolation=cv2.INTER_NEAREST)
@@ -240,7 +241,9 @@ class Screen:
                 show_thread.join()
 
 
+# EXPORT
 screen = Screen()
+
 terminate = False
 show_thread = None
 

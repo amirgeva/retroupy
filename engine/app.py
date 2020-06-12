@@ -1,34 +1,38 @@
 import time
-from scene import Scene
-from view import View
+from .scene import Scene
+from .view import View
 
 app = None
 app_screen = None
 
 
+# EXPORT
 def get_screen_size():
     if not app_screen:
         return 640, 480
     return app_screen.width(), app_screen.height()
 
 
+# EXPORT
 def get_screen():
     global app_screen
     if app_screen:
         return app_screen
     try:
         import os.path  # Test for full python (simulation) vs. platform micropython
-        from sim_screen import screen
-        app_screen = screen
-        screen.start()
-        return screen
-    except ImportError:  # os.path is not implemented on micropython
-        from gpu_screen import screen
-        pass
-        # from screen import
+        from sim import screen
+        app_screen = screen.screen
+        app_screen.start()
+        return app_screen
+    except ImportError as e:  # os.path is not implemented on micropython
+        print(e)
+        from gpu import screen
+        app_screen = screen.screen
+        app_screen.start()
     return None
 
 
+# EXPORT
 class Application(object):
     def __init__(self, scale=1.0):
         global app
