@@ -9,6 +9,15 @@ from engine import *
 from sim.kbd import is_pressed
 
 
+class Monster(Entity):
+    def __init__(self):
+        super().__init__(AnimatedSprite())
+        names = ['bird', 'mush', 'pig', 'rock', 'slime', 'snail']
+        name = names[random.randint(0, len(names) - 1)]
+        self.anim.load(name + '.json')
+        self.anim.set_active_sequence('Walk')
+
+
 class Player(Entity):
     def __init__(self):
         super().__init__(AnimatedSprite())
@@ -16,7 +25,6 @@ class Player(Entity):
         self.sprite.load('char.json')
         self.anim.set_active_sequence('StandRight')
         self.set_position(300, 200)
-        # self.set_velocity(0, 100)
         self.set_accel(0, 200)
         self.stopped = True
         self.right = False
@@ -123,7 +131,7 @@ class GameApplication(Application):
         for _ in range(100):
             platform = generate_platform(random.randint(3, 7))
             row_index = random.randint(0, 5)
-            col_index = random.randint(0, 19-len(platform))
+            col_index = random.randint(0, 19 - len(platform))
             failed = False
             for i in range(col_index - 2, col_index + len(platform) + 2):
                 if rows.get(i, row_index):
@@ -132,7 +140,11 @@ class GameApplication(Application):
                 for i in range(len(platform)):
                     rows.set(i + col_index, row_index, True)
                 self.add_static_sprites(platform, Point(col_index * 32, row_index * 64 + 32))
-        self.add_static_sprites(generate_platform(18),Point(32,448))
+                if random.randint(0, 1) >= 0:
+                    m = Monster()
+                    m.set_position(col_index * 32 + 32, row_index * 64)
+                    self.scene.add(m)
+        self.add_static_sprites(generate_platform(18), Point(32, 416))
 
     def add_static_sprites(self, sprites, pos):
         for sprite in sprites:
