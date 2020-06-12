@@ -41,8 +41,9 @@ class Player(Entity):
 
     def check_max_velocity(self):
         v = self.get_velocity()
-        if abs(v.x) > 100:
-            v.x = 100 if v.x > 0 else -100
+        max_vel = 150
+        if abs(v.x) > max_vel:
+            v.x = max_vel if v.x > 0 else -max_vel
             self.set_velocity(v)
         if self.on_ground:
             self.set_external_force(vector2(-3 * v.x, 0))
@@ -54,13 +55,13 @@ class Player(Entity):
         v = self.get_velocity()
         if self.on_ground:
             if is_pressed('left'):
-                a.x = -200
+                a.x = -250
             elif is_pressed('right'):
-                a.x = 200
+                a.x = 250
             else:
                 a.x = 0
             if is_pressed('up'):
-                v.y = -150
+                v.y = -170
                 self.on_ground = False
                 self.set_velocity(v)
         else:
@@ -111,8 +112,27 @@ class GameApplication(Application):
         super().__init__()
         self.player = Player()
         self.scene.add(self.player)
-        self.add_static_sprites(generate_platform(14), Point(100, 300))
+        # self.add_static_sprites(generate_platform(14), Point(100, 320))
+        # self.add_static_sprites(generate_platform(6), Point(300, 320 - 64))
+        self.generate_level()
         self.bg = rgb(212, 189, 127)
+
+    def generate_level(self):
+        rows = BitMatrix(30, 6)
+        rows.setall(False)
+        for _ in range(100):
+            platform = generate_platform(random.randint(3, 7))
+            row_index = random.randint(0, 5)
+            col_index = random.randint(0, 19-len(platform))
+            failed = False
+            for i in range(col_index - 2, col_index + len(platform) + 2):
+                if rows.get(i, row_index):
+                    failed = True
+            if not failed:
+                for i in range(len(platform)):
+                    rows.set(i + col_index, row_index, True)
+                self.add_static_sprites(platform, Point(col_index * 32, row_index * 64 + 32))
+        self.add_static_sprites(generate_platform(18),Point(32,448))
 
     def add_static_sprites(self, sprites, pos):
         for sprite in sprites:

@@ -42,6 +42,7 @@ class BitArray:
         return False
 
 
+# EXPORT
 class BitMatrix(object):
     def __init__(self, width, height, init=True):
         self.sizes = (width, height)
