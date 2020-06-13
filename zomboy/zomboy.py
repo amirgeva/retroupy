@@ -13,7 +13,7 @@ from player import Player
 
 def generate_platform(size):
     anim = AnimatedSprite()
-    anim.load('platform.json')
+    anim.load('rsc/platform.json')
     center = anim.get_sequence_by_name('Center')
     res = [None] * size
     res[0] = anim.get_sequence_by_name('Left')[0]

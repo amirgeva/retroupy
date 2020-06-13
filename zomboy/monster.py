@@ -13,7 +13,7 @@ class Monster(Entity):
         super().__init__(AnimatedSprite())
         names = ['bird', 'mush', 'pig', 'rock', 'slime', 'snail']
         name = names[random.randint(0, len(names) - 1)]
-        self.anim.load(name + '.json', {'BaseVelocity': 30.0})
+        self.anim.load(f'rsc/{name}.json', {'BaseVelocity': 30.0})
         self.anim.set_active_sequence('WalkRight')
         self.range = (0, 0)
         self.speed = 10

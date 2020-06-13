@@ -13,7 +13,7 @@ class Player(Entity):
     def __init__(self):
         super().__init__(AnimatedSprite())
         self.sprite = self.anim
-        self.sprite.load('char.json')
+        self.sprite.load('rsc/char.json')
         self.anim.set_active_sequence('StandRight')
         self.set_position(300, 200)
         self.set_accel(0, 200)

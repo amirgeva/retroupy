@@ -1,0 +1,130 @@
+{
+    "Image": "rsc/char.raw16",
+    "Flags": { "AnimDir":"X" },
+    "Sequences": [
+        {
+            "Name": "StandRight",
+            "BaseVelocity": 1.0,
+            "Frames": [
+                {
+                    "Rect": "1,1,33,33",
+                    "Duration": 0.1
+                }
+            ]
+        },
+        {
+            "Name": "StandLeft",
+            "BaseVelocity": 1.0,
+            "Frames": [
+                {
+                    "Rect": "1,34,33,66",
+                    "Duration": 0.1
+                }
+            ]
+        },
+        {
+            "Name": "WalkRight",
+            "BaseVelocity": 50.0,
+            "Frames": [
+                {
+                    "Rect": "100,1,132,33",
+                    "Duration": 0.1
+                },
+                {
+                    "Rect": "133,1,165,33",
+                    "Duration": 0.1
+                },
+                {
+                    "Rect": "166,1,198,33",
+                    "Duration": 0.1
+                },
+                {
+                    "Rect": "133,1,165,33",
+                    "Duration": 0.1
+                }
+            ]
+        },
+        {
+            "Name": "WalkLeft",
+            "BaseVelocity": 50.0,
+            "Frames": [
+                {
+                    "Rect": "100,34,132,66",
+                    "Duration": 0.1
+                },
+                {
+                    "Rect": "133,34,165,66",
+                    "Duration": 0.1
+                },
+                {
+                    "Rect": "166,34,198,66",
+                    "Duration": 0.1
+                },
+                {
+                    "Rect": "133,34,165,66",
+                    "Duration": 0.1
+                }
+            ]
+        },
+        {
+            "Name": "PunchRight",
+            "BaseVelocity": 1.0,
+            "Frames": [
+                {
+                    "Rect": "67,67,99,99",
+                    "Duration": 0.1
+                }
+            ]
+        },
+        {
+            "Name": "PunchLeft",
+            "BaseVelocity": 1.0,
+            "Frames": [
+                {
+                    "Rect": "100,67,132,99",
+                    "Duration": 0.1
+                }
+            ]
+        },
+        {
+            "Name": "KickRight",
+            "BaseVelocity": 1.0,
+            "Frames": [
+                {
+                    "Rect": "1,67,33,99",
+                    "Duration": 0.1
+                }
+            ]
+        },
+        {
+            "Name": "KickLeft",
+            "BaseVelocity": 1.0,
+            "Frames": [
+                {
+                    "Rect": "34,67,66,99",
+                    "Duration": 0.1
+                }
+            ]
+        },
+        {
+            "Name": "StumpRight",
+            "BaseVelocity": 1.0,
+            "Frames": [
+                {
+                    "Rect": "133,67,165,99",
+                    "Duration": 0.1
+                }
+            ]
+        },
+        {
+            "Name": "StumpLeft",
+            "BaseVelocity": 1.0,
+            "Frames": [
+                {
+                    "Rect": "166,67,198,99",
+                    "Duration": 0.1
+                }
+            ]
+        }
+    ]
+}
