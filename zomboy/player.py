@@ -1,6 +1,7 @@
 import random
 import os
 import sys
+from monster import Monster
 
 cwd = os.getcwd()
 sys.path.append(cwd[0:max(cwd.rfind('/'), cwd.rfind('\\'))])
@@ -98,9 +99,14 @@ class Player(Entity):
         return super().advance(dt)
 
     def collision(self, other, col_point):
+        v = self.get_velocity()
         if col_point.y > 28 and self.get_velocity().y >= 0:
             self.revert(False, True)
-            v = self.get_velocity()
             v.y = 0
             self.set_velocity(v)
             self.on_ground = True
+        act = self.anim.get_active_sequence_name()
+        if isinstance(other, Monster) and (act.startswith('Kick') or act.startswith('Punch')):
+            if (col_point.x > 20 and act.endswith('Right')) or (col_point.x < 12 and act.endswith('Left')):
+                momentum = 3*(v.x + (col_point.x-16))
+                other.hit(abs(v.x) + random.randint(0, 8) + 5, momentum)

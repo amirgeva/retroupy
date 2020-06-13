@@ -17,12 +17,15 @@ class Monster(Entity):
         self.anim.set_active_sequence('WalkRight')
         self.range = (0, 0)
         self.speed = 10
+        self.hitpoints = 30
 
     def set_range(self, mn, mx):
         self.range = (mn, mx)
         self.set_velocity(self.speed, 0)
 
     def advance(self, dt):
+        if self.hitpoints <= 0:
+            return False
         p = self.get_position()
         v = self.get_velocity()
         if (p.x >= self.range[1] and v.x > 0) or (p.x < self.range[0] and v.x < 0):
@@ -31,3 +34,9 @@ class Monster(Entity):
             self.anim.set_active_sequence(f'Walk{direction}')
             self.set_velocity(v)
         return super().advance(dt)
+
+    def hit(self, damage, momentum):
+        self.hitpoints = self.hitpoints - damage
+        pos = self.get_position()
+        pos.x = pos.x + momentum
+        self.set_position(pos)
