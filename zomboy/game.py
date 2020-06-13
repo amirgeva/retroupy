@@ -14,8 +14,24 @@ class Monster(Entity):
         super().__init__(AnimatedSprite())
         names = ['bird', 'mush', 'pig', 'rock', 'slime', 'snail']
         name = names[random.randint(0, len(names) - 1)]
-        self.anim.load(name + '.json')
-        self.anim.set_active_sequence('Walk')
+        self.anim.load(name + '.json', {'BaseVelocity': 30.0})
+        self.anim.set_active_sequence('WalkRight')
+        self.range = (0, 0)
+        self.speed = 10
+
+    def set_range(self, mn, mx):
+        self.range = (mn, mx)
+        self.set_velocity(self.speed, 0)
+
+    def advance(self, dt):
+        p = self.get_position()
+        v = self.get_velocity()
+        if (p.x >= self.range[1] and v.x > 0) or (p.x < self.range[0] and v.x < 0):
+            v.x = -v.x
+            direction = 'Right' if v.x > 0 else 'Left'
+            self.anim.set_active_sequence(f'Walk{direction}')
+            self.set_velocity(v)
+        return super().advance(dt)
 
 
 class Player(Entity):
@@ -29,6 +45,7 @@ class Player(Entity):
         self.stopped = True
         self.right = False
         self.on_ground = False
+        self.ground_dt = 1000
 
     def check_for_stop(self):
         v = self.get_velocity()
@@ -49,12 +66,16 @@ class Player(Entity):
 
     def check_max_velocity(self):
         v = self.get_velocity()
+        a = self.get_accel()
         max_vel = 150
         if abs(v.x) > max_vel:
             v.x = max_vel if v.x > 0 else -max_vel
             self.set_velocity(v)
         if self.on_ground:
-            self.set_external_force(vector2(-3 * v.x, 0))
+            m = -3
+            if a.x == 0:
+                m = -8
+            self.set_external_force(vector2(m * v.x, 0))
         else:
             self.set_external_force(vector2(0, 0))
 
@@ -68,12 +89,17 @@ class Player(Entity):
                 a.x = 250
             else:
                 a.x = 0
-            if is_pressed('up'):
-                v.y = -170
-                self.on_ground = False
-                self.set_velocity(v)
         else:
             a.x = 0
+        if is_pressed('up'):
+            if self.on_ground:
+                self.ground_dt = 0.0
+                v.y = -120
+            else:
+                if self.ground_dt < 0.5:
+                    v.y = -120+30*self.ground_dt
+            self.on_ground = False
+            self.set_velocity(v)
         direction = 'Right' if self.right else 'Left'
         if is_pressed('x'):
             self.anim.set_active_sequence(f'Kick{direction}')
@@ -89,6 +115,8 @@ class Player(Entity):
         self.set_accel(a)
 
     def advance(self, dt):
+        if self.ground_dt < 0.5:
+            self.ground_dt = self.ground_dt + dt
         self.check_for_stop()
         self.check_for_motion()
         self.check_max_velocity()
@@ -140,9 +168,10 @@ class GameApplication(Application):
                 for i in range(len(platform)):
                     rows.set(i + col_index, row_index, True)
                 self.add_static_sprites(platform, Point(col_index * 32, row_index * 64 + 32))
-                if random.randint(0, 1) >= 0:
+                if random.randint(0, 2) > 0:
                     m = Monster()
                     m.set_position(col_index * 32 + 32, row_index * 64)
+                    m.set_range(col_index * 32 + 16, (col_index + len(platform) - 1) * 32 - 16)
                     self.scene.add(m)
         self.add_static_sprites(generate_platform(18), Point(32, 416))
 

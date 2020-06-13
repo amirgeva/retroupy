@@ -89,13 +89,14 @@ def get_sprite_sheet(filename):
 
 # EXPORT
 class Sprite(object):
-    def __init__(self, sprite_id, mask, duration=0.0):
+    def __init__(self, sprite_id, mask, duration=0.0, flags=0):
         self.sprite_id = sprite_id
         self.mask = mask
         self.duration = duration
+        self.flags = flags
 
     def draw(self, position):
-        get_screen().draw_sprite(position.x, position.y, self.sprite_id)
+        get_screen().draw_sprite(position.x, position.y, self.sprite_id, self.flags)
 
     @staticmethod
     def get_rect():
@@ -105,10 +106,13 @@ class Sprite(object):
     def deserialize(filename, obj):
         r = [int(a) for a in obj['Rect'].strip().split(',')]
         dur = obj['Duration']
+        flags = 0
+        if 'Flags' in obj:
+            flags = obj['Flags']
         rect = Rect(r[0], r[1], r[2], r[3])
         sheet = get_sprite_sheet(filename)
         sprite_id, mask = sheet.get_sprite_data(rect)
-        return Sprite(sprite_id, mask, dur)
+        return Sprite(sprite_id, mask, dur, flags)
 
 
 # EXPORT
@@ -252,18 +256,21 @@ class AnimatedSprite(object):
             return spr.get_rect()
         return Rect(0, 0, 1, 1)
 
-    def deserialize(self, obj):
+    def deserialize(self, obj, overrides):
         filename = obj['Image']
         flags = obj['Flags']
         for key in flags:
             self.add_flag(key, flags[key])
         for seq in obj['Sequences']:
-            s = AnimationSequence(seq['Name'], seq['BaseVelocity'])
+            base_vel = seq['BaseVelocity']
+            if 'BaseVelocity' in overrides:
+                base_vel = overrides.get('BaseVelocity')
+            s = AnimationSequence(seq['Name'], base_vel)
             s.deserialize(filename, seq)
             self.add_sequence(s)
 
-    def load(self, filename):
-        return self.deserialize(json.load(open(filename, "r")))
+    def load(self, filename, overrides={}):
+        return self.deserialize(json.load(open(filename, "r")), overrides)
 
 
 # EXPORT

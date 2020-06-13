@@ -186,7 +186,7 @@ class Screen:
         for c in range(3):
             np.copyto(dst[:, :, c], src[:, :, c], where=alpha)
 
-    def draw_sprite(self, x, y, index):
+    def draw_sprite(self, x, y, index, flags):
         if 0 <= index < N_SPRITES:
             x = int(x)
             y = int(y)
@@ -197,6 +197,8 @@ class Screen:
             else:
                 self.pixel_cursor(x, y)
                 s = self.Sprites[index]
+                if (flags & 1) == 1:
+                    s = cv2.flip(s, 1)
                 alpha = (s[:, :, 3] == 255)
                 for c in range(3):
                     np.copyto(self.Image[y:(y + s.shape[0]), x:(x + s.shape[1]), c], s[:, :, c], where=alpha)
