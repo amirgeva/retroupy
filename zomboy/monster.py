@@ -1,10 +1,4 @@
 import random
-import os
-import sys
-
-cwd = os.getcwd()
-sys.path.append(cwd[0:max(cwd.rfind('/'), cwd.rfind('\\'))])
-
 from engine import *
 
 
@@ -13,7 +7,7 @@ class Monster(Entity):
         super().__init__(AnimatedSprite())
         names = ['bird', 'mush', 'pig', 'rock', 'slime', 'snail']
         name = names[random.randint(0, len(names) - 1)]
-        self.anim.load(f'rsc/{name}.json', {'BaseVelocity': 30.0})
+        self.anim.load('rsc/'+name+'.json', {'BaseVelocity': 30.0})
         self.anim.set_active_sequence('WalkRight')
         self.range = (0, 0)
         self.speed = 10
@@ -31,7 +25,7 @@ class Monster(Entity):
         if (p.x >= self.range[1] and v.x > 0) or (p.x < self.range[0] and v.x < 0):
             v.x = -v.x
             direction = 'Right' if v.x > 0 else 'Left'
-            self.anim.set_active_sequence(f'Walk{direction}')
+            self.anim.set_active_sequence('Walk'+direction)
             self.set_velocity(v)
         return super().advance(dt)
 

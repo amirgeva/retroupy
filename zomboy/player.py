@@ -1,13 +1,6 @@
 import random
-import os
-import sys
-from monster import Monster
-
-cwd = os.getcwd()
-sys.path.append(cwd[0:max(cwd.rfind('/'), cwd.rfind('\\'))])
-
 from engine import *
-from sim.kbd import is_pressed
+from monster import Monster
 
 
 class Player(Entity):
@@ -29,7 +22,7 @@ class Player(Entity):
             direction = 'Right' if v.x > 0 else 'Left'
             v.x = 0.0
             self.set_velocity(v)
-            self.anim.set_active_sequence(f'Stand{direction}')
+            self.anim.set_active_sequence('Stand'+direction)
             self.stopped = True
 
     def check_for_motion(self):
@@ -78,15 +71,15 @@ class Player(Entity):
             self.set_velocity(v)
         direction = 'Right' if self.right else 'Left'
         if is_pressed('x'):
-            self.anim.set_active_sequence(f'Kick{direction}')
+            self.anim.set_active_sequence('Kick'+direction)
         elif self.anim.get_active_sequence_name().startswith('Kick'):
             act = 'Walk' if abs(v.x) > 0.1 else 'Stand'
-            self.anim.set_active_sequence(f'{act}{direction}')
+            self.anim.set_active_sequence(act+direction)
         if is_pressed('z'):
-            self.anim.set_active_sequence(f'Punch{direction}')
+            self.anim.set_active_sequence('Punch'+direction)
         elif self.anim.get_active_sequence_name().startswith('Punch'):
             act = 'Walk' if abs(v.x) > 0.1 else 'Stand'
-            self.anim.set_active_sequence(f'{act}{direction}')
+            self.anim.set_active_sequence(act+direction)
 
         self.set_accel(a)
 

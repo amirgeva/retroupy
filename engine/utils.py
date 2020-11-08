@@ -1,4 +1,4 @@
-import itertools
+# import itertools
 import math
 
 
@@ -30,7 +30,7 @@ class Point(object):
         return hash(self.as_tuple())
 
     def __str__(self):
-        return f'{self.x},{self.y}'
+        return str(self.x)+','+str(self.y)
 
     def __lt__(self, p):
         if not isinstance(p, Point):
@@ -213,7 +213,7 @@ class Rect(object):
         return not (self == r)
 
     def __repr__(self):
-        return f'{self.tl.x},{self.tl.y},{self.br.x},{self.br.y}'
+        return str(self.tl.x)+','+str(self.tl.y)+','+str(self.br.x)+','+str(self.br.y)
 
 
 # EXPORT
@@ -262,4 +262,5 @@ def parse_color(s):
 
 # EXPORT
 def all_pixels(s):
-    return itertools.product(range(s.width()), range(s.height()))
+    pass
+    # return itertools.product(range(s.width()), range(s.height()))

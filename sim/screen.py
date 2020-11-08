@@ -44,6 +44,7 @@ class Screen:
         self.cls()
         self.cursor_block = np.ones((16, 8, 4), dtype=np.uint8)
         self.cursor_block[:] = 255, 255, 255, 255
+        self.cursor_on = False
         cv2.namedWindow('vis')
 
     def flush(self):
@@ -53,6 +54,7 @@ class Screen:
         pass
 
     def draw_cursor(self):
+        self.cursor_on = not self.cursor_on
         x, y = self.Cursor
         c = self.cursor_block
         sub = self.Image[y:y + c.shape[0], x:x + c.shape[1]]
@@ -94,6 +96,8 @@ class Screen:
         self.Cursor = (0, y)
 
     def pixel_cursor(self, x, y):
+        if self.blinking and self.cursor_on:
+            self.draw_cursor()
         if 0 <= x < self.width() and 0 <= y < self.height():
             self.Cursor = (x, y)
 

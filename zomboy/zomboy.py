@@ -1,12 +1,6 @@
 import random
-import os
-import sys
-
-cwd = os.getcwd()
-sys.path.append(cwd[0:max(cwd.rfind('/'), cwd.rfind('\\'))])
-
+import utime
 from engine import *
-from sim.kbd import is_pressed
 from monster import Monster
 from player import Player
 
@@ -70,17 +64,21 @@ class GameApplication(Application):
         return super().handle_events()
 
     def draw(self, view):
-        r = view.get_rect()
         scr = get_screen()
+        scr.reset_count()
+        start = utime.ticks_ms()
+        r = view.get_rect()
         scr.bg_color(self.bg)
         scr.fill_rect(r.tl.x, r.tl.y, r.br.x, r.br.y)
         super().draw(view)
+        dur = utime.ticks_ms() - start
+        print("Render time: "+str(dur)+"ms  "+str(scr.byte_count))
 
 
-def main():
+def main(*args):
     app = GameApplication()
     app.run()
 
 
 if __name__ == '__main__':
-    main()
+    main('')

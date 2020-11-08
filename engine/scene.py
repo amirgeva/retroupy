@@ -18,7 +18,7 @@ class Scene(object):
         else:
             self.statics.add(eid)
         r = entity.get_rect()
-        self.rtree.add(eid, r)
+        # self.rtree.add(eid, r)
 
     def advance(self, dt):
         ids = set(self.dynamics)  # Copy to allow deletions
@@ -26,7 +26,7 @@ class Scene(object):
             e = self.entities.get(eid)
             before = e.get_rect()
             if not e.advance(dt):
-                self.rtree.remove(eid)
+                # self.rtree.remove(eid)
                 self.dynamics.remove(eid)
                 del self.entities[eid]
             else:
@@ -34,19 +34,21 @@ class Scene(object):
                 if before != after:
                     self.check_collisions(e, after)
                     after = e.get_rect()
-                    self.rtree.move(e.get_id(), after)
+                    # self.rtree.move(e.get_id(), after)
 
     def draw(self, view):
-        visible = self.rtree.search(view.get_rect())
-        vis_id = [v[0] for v in visible]
-        ids = [eid for eid in vis_id if eid in self.statics]
-        ids.extend([eid for eid in vis_id if eid not in self.statics])
+        # visible = self.rtree.search(view.get_rect())
+        # vis_id = [v[0] for v in visible]
+        # ids = [eid for eid in vis_id if eid in self.statics]
+        # ids.extend([eid for eid in vis_id if eid not in self.statics])
+        ids = list(self.statics) + list(self.dynamics)
         for eid in ids:
             e = self.entities.get(eid)
             if e:
                 e.draw(view)
 
     def check_collisions(self, entity, rect):
+        return
         eid = entity.get_id()
         spr1 = entity.anim.get_current_sprite()
         cands = self.rtree.search(rect)

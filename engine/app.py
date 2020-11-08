@@ -4,6 +4,21 @@ from .view import View
 
 app = None
 app_screen = None
+is_pressed_impl = None
+
+
+# EXPORT
+def is_pressed(key):
+    global is_pressed_impl
+    if not is_pressed_impl:
+        try:
+            import os  # Trigger ImportError on micropython
+            import keyboard
+            is_pressed_impl = keyboard.is_pressed
+        except ImportError:
+            pass
+    else:
+        return is_pressed_impl(key)
 
 
 # EXPORT
@@ -25,10 +40,10 @@ def get_screen():
         app_screen.start()
         return app_screen
     except ImportError as e:  # os.path is not implemented on micropython
-        print(e)
         from gpu import screen
         app_screen = screen.screen
         app_screen.start()
+        return app_screen
     return None
 
 
@@ -48,13 +63,14 @@ class Application(object):
         cur = time.time()
         dt = cur - self.last_ts
         self.last_ts = cur
-        if dt>0:
+        if dt > 0:
             self.fps = 0.9 * self.fps + 0.1 / dt
         return dt
 
     @staticmethod
     def flip():
         get_screen().flip()
+        get_screen().nop()
 
     def clear(self, color=(192, 128, 255)):
         pass
@@ -70,6 +86,7 @@ class Application(object):
 
     def draw(self, view):
         self.scene.draw(view)
+        # self.flip()
 
     def loop(self, dt):
         self.scene.advance(dt)
@@ -80,7 +97,6 @@ class Application(object):
         while self.handle_events():
             if not self.loop(self.calc_dt()):
                 break
-            self.flip()
         get_screen().stop()
 
 # EXPORT

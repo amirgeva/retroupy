@@ -148,7 +148,7 @@ def unit_test():
         m2 = BFBitMatrix(s, s)
         for i in range(n):
             if not compare(m1, m2):
-                raise Exception(f"Failed {i}")
+                raise Exception("Failed: "+str(i))
             x = randint(0, s - 1)
             y = randint(0, s - 1)
             v = (randint(0, 1) > 0)
@@ -158,7 +158,7 @@ def unit_test():
             o1 = m1.overlap(m1, offset)
             o2 = m2.overlap(m2, offset)
             if o1 != o2:
-                raise Exception(f"Failed overlap {i}")
+                raise Exception("Failed overlap: "+str(i))
         raise Exception("Test successful")
     except Exception as e:
         print(e)

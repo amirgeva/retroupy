@@ -1,5 +1,6 @@
 import json
 import os
+import gc
 
 from .app import get_screen
 from .utils import Rect
@@ -42,14 +43,24 @@ class SpriteSheet:
         if filename:
             self.load(filename)
 
+
+    def clean(self):
+        self.data = None
+        gc.collect()
+
     def load(self, filename):
         try:
-            data = open(filename, 'rb').read()
-            self.width = (int(data[1]) << 8) | int(data[0])
-            self.height = (int(data[3]) << 8) | int(data[2])
-            self.data = data[4:]
-            self.rect = Rect(0, 0, self.width, self.height)
-            return True
+            gc.collect()
+            print("Loading "+filename)
+            print("Free Mem: "+str(gc.mem_free()))
+            with open(filename, 'rb') as f:
+                data = f.read(4)
+                self.width = (int(data[1]) << 8) | int(data[0])
+                self.height = (int(data[3]) << 8) | int(data[2])
+                data = None
+                self.data = f.read()
+                self.rect = Rect(0, 0, self.width, self.height)
+                return True
         except OSError:
             return False
 
@@ -69,7 +80,7 @@ class SpriteSheet:
                         mask.set(j, i, False)
                 dst = dst + 64
                 src = src + self.width * 2
-            sprite_data = sprites_manager.allocate(data), mask
+            sprite_data = sprites_manager.allocate(bytes(data)), mask
             self.sprites[rect] = sprite_data
         else:
             sprite_data = -1, None
@@ -268,6 +279,8 @@ class AnimatedSprite(object):
             s = AnimationSequence(seq['Name'], base_vel)
             s.deserialize(filename, seq)
             self.add_sequence(s)
+        for name in sprite_sheets:
+            sprite_sheets.get(name).clean()
 
     def load(self, filename, overrides={}):
         return self.deserialize(json.load(open(filename, "r")), overrides)

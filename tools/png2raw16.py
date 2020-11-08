@@ -8,7 +8,7 @@ def cvt32to16(color):
     g = color[1]
     b = color[2]
     a = color[3]
-    res = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3)
+    res = ((b & 0xF8) << 8) | ((g & 0xFC) << 3) | (r >> 3)
     if res == 0x20:
         res = 0
     if a == 0:

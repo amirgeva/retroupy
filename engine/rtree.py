@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import sys
 from random import randint, seed
 
 from .utils import Rect
@@ -186,9 +185,6 @@ def unit_test():
     fail = False
     rects = 0
     for i in range(10000):
-        if (i & 255) == 0:
-            sys.stdout.write(f'{i}\r')
-        # print(f"{i} {rects} {t1.depth()}")
         if fail:
             break
         act = randint(0, 100)
@@ -208,14 +204,16 @@ def unit_test():
             res1 = t1.search(r)
             res2 = t2.search(r)
             if len(res1) != len(res2):
-                print(f"{i}: Mismatch result length")
+                print("Mismatch result length")
+                print(i)
                 fail = True
                 break
             res1.sort(key=lambda t: t[0])
             res2.sort(key=lambda t: t[0])
             for j in range(len(res1)):
                 if res1[j][0] != res2[j][0]:
-                    print(f"{i}: Mismatch found ID")
+                    print("Mismatch found ID")
+                    print(i)
                     fail = True
                     break
         elif act < 100:

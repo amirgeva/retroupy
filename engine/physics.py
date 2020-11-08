@@ -22,8 +22,8 @@ class RigidBody(object):
         self.velocity += (self.accel + self.external).scaled(dt)
 
     def revert(self, revx=True, revy=True):
-        x: float = self.prepos.x if revx else self.position.x
-        y: float = self.prepos.y if revy else self.position.y
+        x = self.prepos.x if revx else self.position.x
+        y = self.prepos.y if revy else self.position.y
         self.position = vector2(x, y)
 
     def get_position(self):
